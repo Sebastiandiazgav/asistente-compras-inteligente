@@ -1,0 +1,10 @@
+langgraph
+langchain
+langchain_aws
+boto3
+jupyter
+notebook
+python-dotenv
+# Considera añadir versiones específicas si encuentras problemas de compatibilidad, ej:
+# langgraph==0.0.30
+# langchain==0.1.13
