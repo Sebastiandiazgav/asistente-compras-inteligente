@@ -3,8 +3,18 @@
     "id": "tv001",
     "nombre": "Televisor SuperVision LED 4K 55 pulgadas",
     "categoria": "televisor",
-    "marca": "SuperVision",
+    "marca": "supervisión",
     "precio": 1200.00,
+    "stock": 10,
+    "caracteristicas": ["HDR10+", "Smart TV", "Dolby Atmos"],
+    "descripcion": "Disfruta de una calidad de imagen superior con resolución 4K y colores vibrantes."
+  },
+  {
+    "id": "tv001",
+    "nombre": "Televisor  LG LED 4K 55 pulgadas",
+    "categoria": "televisor",
+    "marca": "LG",
+    "precio": 1600.00,
     "stock": 10,
     "caracteristicas": ["HDR10+", "Smart TV", "Dolby Atmos"],
     "descripcion": "Disfruta de una calidad de imagen superior con resolución 4K y colores vibrantes."
