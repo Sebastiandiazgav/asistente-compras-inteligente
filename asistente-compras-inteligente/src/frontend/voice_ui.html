@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Voz - Captura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos adicionales si son necesarios */
+        body {
+            font-family: 'Inter', sans-serif; /* Usar Inter como fuente principal */
+        }
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Asistente de Compras por Voz</h1>
+
+        <div id="statusMessages" class="mb-4 p-3 rounded-md text-sm">
+            <p class="text-gray-600">Haz clic en "Iniciar Grabación" para comenzar.</p>
+        </div>
+
+        <div class="space-y-4 md:space-y-0 md:space-x-4 flex flex-col md:flex-row justify-center mb-6">
+            <button id="startButton" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full md:w-auto">
+                Iniciar Grabación
+            </button>
+            <button id="stopButton" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full md:w-auto btn-disabled" disabled>
+                Detener Grabación
+            </button>
+        </div>
+
+        <div id="audioPlaybackContainer" class="mt-6 hidden">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Grabación Completada:</h3>
+            <audio id="audioPlayback" controls class="w-full rounded-lg shadow"></audio>
+            <a id="downloadLink" class="mt-3 inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out" download="grabacion_usuario.wav">
+                Descargar Grabación (.wav)
+            </a>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2024 - Prototipo Asistente de Voz</p>
+    </footer>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const audioPlayback = document.getElementById('audioPlayback');
+        const downloadLink = document.getElementById('downloadLink');
+        const statusMessages = document.getElementById('statusMessages');
+        const audioPlaybackContainer = document.getElementById('audioPlaybackContainer');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioStream;
+
+        // Función para mostrar mensajes de estado
+        function showStatus(message, type = 'info') {
+            statusMessages.innerHTML = ''; // Limpiar mensajes anteriores
+            const p = document.createElement('p');
+            p.textContent = message;
+            if (type === 'error') {
+                p.className = 'text-red-600 font-semibold';
+            } else if (type === 'success') {
+                p.className = 'text-green-600 font-semibold';
+            } else {
+                p.className = 'text-gray-600';
+            }
+            statusMessages.appendChild(p);
+        }
+
+        // Solicitar permiso para el micrófono y configurar MediaRecorder
+        async function setupMediaRecorder() {
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Opciones para MediaRecorder. Intentar con 'audio/wav' si es posible, sino 'audio/webm'.
+                const options = { mimeType: 'audio/webm' }; // 'audio/wav' no es universalmente soportado por MediaRecorder
+                                                          // WebM es ampliamente soportado y se puede convertir a WAV si es necesario.
+                if (MediaRecorder.isTypeSupported('audio/wav; codecs=pcm')) {
+                    // options.mimeType = 'audio/wav; codecs=pcm'; // Podría no funcionar en todos los navegadores
+                    // downloadLink.download = "grabacion_usuario.wav";
+                } else if (MediaRecorder.isTypeSupported('audio/webm; codecs=opus')) {
+                    options.mimeType = 'audio/webm; codecs=opus';
+                    downloadLink.download = "grabacion_usuario.webm";
+                } else if (MediaRecorder.isTypeSupported('audio/ogg; codecs=opus')) {
+                    options.mimeType = 'audio/ogg; codecs=opus';
+                    downloadLink.download = "grabacion_usuario.ogg";
+                } else {
+                     downloadLink.download = "grabacion_usuario.webm"; // Fallback
+                }
+
+
+                mediaRecorder = new MediaRecorder(audioStream, options);
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioPlayback.src = audioUrl;
+                    downloadLink.href = audioUrl;
+                    // downloadLink.download ya está configurado arriba según el mimeType
+                    
+                    audioPlaybackContainer.classList.remove('hidden');
+                    showStatus('Grabación detenida. Puedes reproducir o descargar.', 'success');
+                    startButton.disabled = false;
+                    startButton.classList.remove('btn-disabled');
+                    stopButton.disabled = true;
+                    stopButton.classList.add('btn-disabled');
+                };
+                return true;
+            } catch (error) {
+                console.error('Error al acceder al micrófono:', error);
+                showStatus('Error al acceder al micrófono. Asegúrate de dar permiso y que no esté siendo usado por otra aplicación.', 'error');
+                startButton.disabled = false;
+                startButton.classList.remove('btn-disabled');
+                return false;
+            }
+        }
+
+        startButton.addEventListener('click', async () => {
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                const setupSuccess = await setupMediaRecorder();
+                if (!setupSuccess) return; // No continuar si el setup falló
+            }
+            
+            if (mediaRecorder && mediaRecorder.state === "inactive") {
+                audioChunks = []; // Limpiar chunks de grabaciones anteriores
+                mediaRecorder.start();
+                showStatus('Grabando... Haz clic en "Detener Grabación" cuando termines.', 'info');
+                startButton.disabled = true;
+                startButton.classList.add('btn-disabled');
+                stopButton.disabled = false;
+                stopButton.classList.remove('btn-disabled');
+                audioPlaybackContainer.classList.add('hidden');
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                // Detener las pistas del stream del micrófono para apagar el indicador de grabación del navegador
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                }
+                // No deshabilitar startButton aquí, se hace en mediaRecorder.onstop
+            }
+        });
+
+        // Inicialización
+        showStatus('Haz clic en "Iniciar Grabación" para comenzar.');
+        stopButton.disabled = true; // Asegurar que stop esté deshabilitado al inicio
+        stopButton.classList.add('btn-disabled');
+
+    </script>
+</body>
+</html>
