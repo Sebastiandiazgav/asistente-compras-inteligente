@@ -6,9 +6,9 @@
     <title>Asistente de Voz - Captura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos adicionales si son necesarios */
+        
         body {
-            font-family: 'Inter', sans-serif; /* Usar Inter como fuente principal */
+            font-family: 'Inter', sans-serif;
         }
         .btn-disabled {
             opacity: 0.5;
@@ -59,9 +59,9 @@
         let audioChunks = [];
         let audioStream;
 
-        // Función para mostrar mensajes de estado
+        
         function showStatus(message, type = 'info') {
-            statusMessages.innerHTML = ''; // Limpiar mensajes anteriores
+            statusMessages.innerHTML = ''; 
             const p = document.createElement('p');
             p.textContent = message;
             if (type === 'error') {
@@ -79,12 +79,11 @@
             try {
                 audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
-                // Opciones para MediaRecorder. Intentar con 'audio/wav' si es posible, sino 'audio/webm'.
-                const options = { mimeType: 'audio/webm' }; // 'audio/wav' no es universalmente soportado por MediaRecorder
-                                                          // WebM es ampliamente soportado y se puede convertir a WAV si es necesario.
+                // Opciones para MediaRecorder. 
+                const options = { mimeType: 'audio/webm' }; 
+                                            
                 if (MediaRecorder.isTypeSupported('audio/wav; codecs=pcm')) {
-                    // options.mimeType = 'audio/wav; codecs=pcm'; // Podría no funcionar en todos los navegadores
-                    // downloadLink.download = "grabacion_usuario.wav";
+                    
                 } else if (MediaRecorder.isTypeSupported('audio/webm; codecs=opus')) {
                     options.mimeType = 'audio/webm; codecs=opus';
                     downloadLink.download = "grabacion_usuario.webm";
@@ -92,7 +91,7 @@
                     options.mimeType = 'audio/ogg; codecs=opus';
                     downloadLink.download = "grabacion_usuario.ogg";
                 } else {
-                     downloadLink.download = "grabacion_usuario.webm"; // Fallback
+                     downloadLink.download = "grabacion_usuario.webm";
                 }
 
 
@@ -129,11 +128,11 @@
         startButton.addEventListener('click', async () => {
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
                 const setupSuccess = await setupMediaRecorder();
-                if (!setupSuccess) return; // No continuar si el setup falló
+                if (!setupSuccess) return;
             }
             
             if (mediaRecorder && mediaRecorder.state === "inactive") {
-                audioChunks = []; // Limpiar chunks de grabaciones anteriores
+                audioChunks = []; 
                 mediaRecorder.start();
                 showStatus('Grabando... Haz clic en "Detener Grabación" cuando termines.', 'info');
                 startButton.disabled = true;
@@ -157,7 +156,7 @@
 
         // Inicialización
         showStatus('Haz clic en "Iniciar Grabación" para comenzar.');
-        stopButton.disabled = true; // Asegurar que stop esté deshabilitado al inicio
+        stopButton.disabled = true;
         stopButton.classList.add('btn-disabled');
 
     </script>
