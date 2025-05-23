@@ -23,33 +23,6 @@ El sistema se compone de tres partes principales:
 3.  **Datos:**
     * `products.json`: Un archivo JSON que simula un catálogo de productos, utilizado por el agente.
 
-## Estructura del Repositorio
-
-
-asistente-compras-inteligente/
-│
-├── .github/                # (Opcional) Workflows de GitHub Actions
-├── .vscode/                # (Opcional) Configuración de VS Code
-├── data/                   # Archivos de datos
-│   ├── products.json       # Catálogo de productos simulado
-│   └── (audios de prueba/respuesta generados)
-├── docs/                   # Documentación adicional y diagramas
-│   └── (diagramas de arquitectura, funcional, etc.)
-├── frontend/               # Interfaz de usuario
-│   └── voice_ui.html       # UI para captura de voz e interacción
-├── lambda_layer_stuff/     # Archivos para crear la capa de Lambda (instrucciones abajo)
-│   └── python/             # Estructura para la capa con dependencias
-├── notebooks/              # Jupyter Notebooks de desarrollo progresivo
-│   ├── nivel1_text_agent.ipynb
-│   └── nivel2_voice_agent.ipynb
-├── src/                    # Código fuente del backend
-│   └── api/
-│       ├── lambda_function.py # Lógica principal del agente para AWS Lambda
-│       ├── products.json      # Copia del catálogo para empaquetar con la Lambda
-│       └── requirements.txt   # Dependencias Python para la capa de Lambda
-├── .env.example            # Ejemplo de variables de entorno
-├── .gitignore
-└── README.md               # Este archivo
 
 
 ## Tecnologías Utilizadas
