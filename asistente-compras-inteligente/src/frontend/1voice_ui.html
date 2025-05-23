@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Voz - Nivel 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #agentResponseContainer {
+            max-height: 300px; 
+            overflow-y: auto; 
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-xl w-full max-w-lg text-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Asistente de Compras por Voz</h1>
+
+        <div id="statusMessages" class="mb-4 p-3 rounded-md text-sm min-h-[40px] flex items-center justify-center">
+            <p class="text-gray-600">Haz clic en "Iniciar Grabación" para comenzar.</p>
+        </div>
+
+        <div class="space-y-4 md:space-y-0 md:space-x-4 flex flex-col md:flex-row justify-center mb-6">
+            <button id="startButton" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full md:w-auto">
+                Iniciar Grabación
+            </button>
+            <button id="stopButton" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full md:w-auto btn-disabled" disabled>
+                Detener Grabación
+            </button>
+        </div>
+
+        <div id="processingSpinner" class="hidden my-4">
+            <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-blue-500 text-sm mt-2">Procesando tu solicitud...</p>
+        </div>
+        
+        <div id="audioPlaybackContainer" class="mt-6 hidden border-t pt-4">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Tu Grabación:</h3>
+            <audio id="userAudioPlayback" controls class="w-full rounded-lg shadow mb-3"></audio>
+            <a id="downloadUserAudioLink" class="text-xs text-blue-500 hover:text-blue-700" download="grabacion_usuario.webm">Descargar mi grabación</a>
+        </div>
+
+        <div id="agentResponseContainer" class="mt-6 hidden border-t pt-4 text-left">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Respuesta del Asistente:</h3>
+            <p id="agentTextResponse" class="text-gray-700 bg-gray-50 p-3 rounded-md whitespace-pre-wrap"></p>
+            <audio id="agentAudioResponse" controls class="w-full rounded-lg shadow mt-3 hidden"></audio>
+        </div>
+
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2024 - Prototipo Asistente de Voz Nivel 3</p>
+    </footer>
+
+    <script>
+
+        const API_GATEWAY_INVOKE_URL = 'https://y9bawl9ij3.execute-api.us-east-1.amazonaws.com/interactuar'; 
+
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const userAudioPlayback = document.getElementById('userAudioPlayback');
+        const downloadUserAudioLink = document.getElementById('downloadUserAudioLink');
+        const statusMessages = document.getElementById('statusMessages');
+        const audioPlaybackContainer = document.getElementById('audioPlaybackContainer');
+        const agentResponseContainer = document.getElementById('agentResponseContainer');
+        const agentTextResponse = document.getElementById('agentTextResponse');
+        const agentAudioResponse = document.getElementById('agentAudioResponse');
+        const processingSpinner = document.getElementById('processingSpinner');
+
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioStream;
+        let recordedAudioMimeType = 'audio/webm'; 
+
+        function showStatus(message, type = 'info') {
+            statusMessages.innerHTML = '';
+            const p = document.createElement('p');
+            p.textContent = message;
+            if (type === 'error') p.className = 'text-red-600 font-semibold';
+            else if (type === 'success') p.className = 'text-green-600 font-semibold';
+            else p.className = 'text-gray-600';
+            statusMessages.appendChild(p);
+        }
+
+        async function setupMediaRecorder() {
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const options = {};
+                if (MediaRecorder.isTypeSupported('audio/webm; codecs=opus')) {
+                    options.mimeType = 'audio/webm; codecs=opus';
+                    recordedAudioMimeType = 'audio/webm';
+                    downloadUserAudioLink.download = "grabacion_usuario.webm";
+                } else if (MediaRecorder.isTypeSupported('audio/ogg; codecs=opus')) {
+                    options.mimeType = 'audio/ogg; codecs=opus';
+                    recordedAudioMimeType = 'audio/ogg';
+                    downloadUserAudioLink.download = "grabacion_usuario.ogg";
+                } else if (MediaRecorder.isTypeSupported('audio/wav; codecs=pcm')) { 
+                    options.mimeType = 'audio/wav; codecs=pcm';
+                    recordedAudioMimeType = 'audio/wav';
+                    downloadUserAudioLink.download = "grabacion_usuario.wav";
+                } else {
+                    
+                    recordedAudioMimeType = 'audio/webm';
+                    downloadUserAudioLink.download = "grabacion_usuario.webm"; 
+                    console.warn("MIME type preferido no soportado, usando default del navegador (probablemente webm).");
+                }
+                
+                mediaRecorder = new MediaRecorder(audioStream, options);
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: recordedAudioMimeType });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    userAudioPlayback.src = audioUrl;
+                    downloadUserAudioLink.href = audioUrl;
+                    
+                    audioPlaybackContainer.classList.remove('hidden');
+                    showStatus('Grabación detenida. Enviando al asistente...', 'info');
+                    processingSpinner.classList.remove('hidden');
+
+                    // Enviar audio a la API
+                    await sendAudioToAPI(audioBlob);
+
+                    startButton.disabled = false;
+                    startButton.classList.remove('btn-disabled');
+                    stopButton.disabled = true;
+                    stopButton.classList.add('btn-disabled');
+                };
+                return true;
+            } catch (error) {
+                console.error('Error al acceder al micrófono:', error);
+                showStatus('Error al acceder al micrófono. Asegúrate de dar permiso.', 'error');
+                startButton.disabled = false;
+                startButton.classList.remove('btn-disabled');
+                return false;
+            }
+        }
+
+        async function sendAudioToAPI(audioBlob) {
+            if (API_GATEWAY_INVOKE_URL === 'TU_URL_DE_INVOCACION_DE_API_GATEWAY_AQUI/process-audio' || !API_GATEWAY_INVOKE_URL) {
+                showStatus('Error: La URL de API Gateway no está configurada en el script.', 'error');
+                processingSpinner.classList.add('hidden');
+                return;
+            }
+
+            // Convertir Blob a base64
+            const reader = new FileReader();
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+                const base64AudioData = reader.result.split(',')[1]; 
+                
+
+                let audioFormatForLambda = 'webm';
+                if (recordedAudioMimeType.includes('webm')) audioFormatForLambda = 'webm';
+                else if (recordedAudioMimeType.includes('ogg')) audioFormatForLambda = 'ogg';
+                else if (recordedAudioMimeType.includes('wav')) audioFormatForLambda = 'wav';
+
+                const payload = {
+                    audio_base64: base64AudioData,
+                    audio_format: audioFormatForLambda 
+                };
+
+                try {
+                    const response = await fetch(API_GATEWAY_INVOKE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    processingSpinner.classList.add('hidden'); 
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: 'Error desconocido del servidor.' }));
+                        throw new Error(`Error del servidor: ${response.status} - ${errorData.error || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    showStatus('Respuesta recibida del asistente.', 'success');
+                    
+                    agentTextResponse.textContent = result.agentResponseText || "El asistente no proporcionó una respuesta de texto.";
+                    agentResponseContainer.classList.remove('hidden');
+
+                    if (result.agentResponseAudioBase64) {
+                        agentAudioResponse.src = `data:audio/mpeg;base64,${result.agentResponseAudioBase64}`; 
+                        agentAudioResponse.classList.remove('hidden');
+                        agentAudioResponse.play(); 
+                    } else {
+                        agentAudioResponse.classList.add('hidden');
+                    }
+                    console.log("Log del Agente:", result.agentCallLog);
+
+                } catch (error) {
+                    console.error('Error al enviar audio a la API:', error);
+                    showStatus(`Error al procesar la solicitud: ${error.message}`, 'error');
+                    processingSpinner.classList.add('hidden');
+                    agentResponseContainer.classList.add('hidden');
+                }
+            };
+            reader.onerror = (error) => {
+                console.error('Error al leer el Blob de audio:', error);
+                showStatus('Error al procesar el audio grabado.', 'error');
+                processingSpinner.classList.add('hidden');
+            };
+        }
+
+        startButton.addEventListener('click', async () => {
+
+            agentResponseContainer.classList.add('hidden');
+            agentTextResponse.textContent = '';
+            agentAudioResponse.classList.add('hidden');
+            agentAudioResponse.src = '';
+            audioPlaybackContainer.classList.add('hidden');
+
+
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                const setupSuccess = await setupMediaRecorder();
+                if (!setupSuccess) return;
+            }
+            
+            if (mediaRecorder && mediaRecorder.state === "inactive") {
+                audioChunks = [];
+                mediaRecorder.start();
+                showStatus('Grabando... Haz clic en "Detener Grabación".', 'info');
+                startButton.disabled = true;
+                startButton.classList.add('btn-disabled');
+                stopButton.disabled = false;
+                stopButton.classList.remove('btn-disabled');
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                }
+            }
+        });
+
+        showStatus('Haz clic en "Iniciar Grabación" para comenzar.');
+        stopButton.disabled = true;
+        stopButton.classList.add('btn-disabled');
+    </script>
+</body>
+</html>

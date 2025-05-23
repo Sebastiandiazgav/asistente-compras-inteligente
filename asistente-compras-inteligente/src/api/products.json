@@ -1,0 +1,170 @@
+[
+  {
+    "id": "tv001",
+    "nombre": "Televisor SuperVision LED 4K 55 pulgadas",
+    "categoria": "televisor",
+    "marca": "supervisión",
+    "precio": 1200.00,
+    "stock": 10,
+    "caracteristicas": ["HDR10+", "Smart TV", "Dolby Atmos"],
+    "descripcion": "Disfruta de una calidad de imagen superior con resolución 4K y colores vibrantes."
+  },
+  {
+    "id": "tv001",
+    "nombre": "Televisor  LG LED 4K 55 pulgadas",
+    "categoria": "televisor",
+    "marca": "LG",
+    "precio": 1600.00,
+    "stock": 10,
+    "caracteristicas": ["HDR10+", "Smart TV", "Dolby Atmos"],
+    "descripcion": "Disfruta de una calidad de imagen superior con resolución 4K y colores vibrantes."
+  },
+  {
+    "id": "tv002",
+    "nombre": "Televisor VisionX QLED 8K 65 pulgadas",
+    "categoria": "televisor",
+    "marca": "VisionX",
+    "precio": 2500.00,
+    "stock": 5,
+    "caracteristicas": ["Quantum Dot", "AI Upscaling", "Asistente de Voz"],
+    "descripcion": "Experimenta el futuro de la televisión con la impresionante resolución 8K y tecnología QLED."
+  },
+  {
+    "id": "tv003",
+    "nombre": "Televisor EcoView LED Full HD 40 pulgadas",
+    "categoria": "televisor",
+    "marca": "EcoView",
+    "precio": 450.00,
+    "stock": 15,
+    "caracteristicas": ["Bajo Consumo", "Diseño Delgado"],
+    "descripcion": "Ideal para espacios pequeños, este televisor ofrece una gran imagen y eficiencia energética."
+  },
+  {
+    "id": "tv004",
+    "nombre": "Televisor SuperVision OLED 4K 65 pulgadas Pro",
+    "categoria": "televisor",
+    "marca": "SuperVision",
+    "precio": 1800.00,
+    "stock": 7,
+    "caracteristicas": ["OLED Puro", "Procesador Alpha 9", "Sonido Envolvente"],
+    "descripcion": "Negros perfectos y colores realistas con la tecnología OLED para una experiencia cinematográfica."
+  },
+  {
+    "id": "lap001",
+    "nombre": "Laptop ProBook X1 Intel i7 16GB RAM 512GB SSD",
+    "categoria": "laptop",
+    "marca": "ProBook",
+    "precio": 1500.00,
+    "stock": 8,
+    "caracteristicas": ["Pantalla 14 pulgadas", "Teclado Retroiluminado", "Windows 11 Pro"],
+    "descripcion": "Potencia y portabilidad para profesionales exigentes."
+  },
+  {
+    "id": "lap002",
+    "nombre": "Laptop GamerPro AMD Ryzen 9 32GB RAM 1TB SSD RTX 4070",
+    "categoria": "laptop",
+    "marca": "GamerPro",
+    "precio": 2200.00,
+    "stock": 3,
+    "caracteristicas": ["Pantalla 17 pulgadas 144Hz", "Refrigeración Avanzada"],
+    "descripcion": "Domina tus juegos con el máximo rendimiento y gráficos impresionantes."
+  },
+  {
+    "id": "lap003",
+    "nombre": "Ultrabook SwiftAir Intel i5 8GB RAM 256GB SSD",
+    "categoria": "laptop",
+    "marca": "SwiftAir",
+    "precio": 850.00,
+    "stock": 12,
+    "caracteristicas": ["Ligera y Delgada", "Batería Larga Duración", "Pantalla Táctil"],
+    "descripcion": "La compañera perfecta para llevar a todas partes, combinando diseño y eficiencia."
+  },
+  {
+    "id": "zap001",
+    "nombre": "Zapatillas RunnerFlex Max Confort",
+    "categoria": "zapatillas",
+    "marca": "RunnerFlex",
+    "precio": 120.00,
+    "stock": 25,
+    "tallas_disponibles": ["39", "40", "41", "42", "43", "44"],
+    "colores": ["negro", "rojo", "azul", "gris"],
+    "descripcion": "Máxima comodidad y amortiguación para tus carreras diarias."
+  },
+  {
+    "id": "zap002",
+    "nombre": "Zapatillas UrbanStyle Classic",
+    "categoria": "zapatillas",
+    "marca": "UrbanStyle",
+    "precio": 85.00,
+    "stock": 30,
+    "tallas_disponibles": ["38", "39", "40", "41", "42"],
+    "colores": ["blanco", "negro", "verde"],
+    "descripcion": "Un diseño clásico y versátil para tu look urbano."
+  },
+  {
+    "id": "zap003",
+    "nombre": "Botas de Montaña TerraTrek Impermeables",
+    "categoria": "botas",
+    "marca": "TerraTrek",
+    "precio": 180.00,
+    "stock": 10,
+    "tallas_disponibles": ["40", "41", "42", "43", "44", "45"],
+    "colores": ["marrón", "negro", "gris"],
+    "descripcion": "Conquista cualquier terreno con estas botas robustas e impermeables."
+  },
+  {
+    "id": "cam001",
+    "nombre": "Camisa Casual ModernFit Algodón",
+    "categoria": "camisa",
+    "marca": "StyleWear",
+    "precio": 45.00,
+    "stock": 50,
+    "tallas_disponibles": ["S", "M", "L", "XL"],
+    "colores": ["blanco", "azul_cielo", "negro", "rosa"],
+    "descripcion": "Comodidad y estilo para tu día a día con esta camisa de algodón de alta calidad."
+  },
+  {
+    "id": "mob001",
+    "nombre": "Smartphone NovaPhone X20 128GB",
+    "categoria": "smartphone",
+    "marca": "NovaPhone",
+    "precio": 700.00,
+    "stock": 18,
+    "caracteristicas": ["Pantalla AMOLED 6.5 pulgadas", "Cámara Triple 48MP", "Batería 5000mAh"],
+    "colores": ["negro_estelar", "azul_oceano", "blanco_perla"],
+    "descripcion": "Tecnología de punta en tus manos con el nuevo NovaPhone X20."
+  },
+  {
+    "id": "mob002",
+    "nombre": "Smartphone EcoMobile Lite 64GB",
+    "categoria": "smartphone",
+    "marca": "EcoMobile",
+    "precio": 250.00,
+    "stock": 22,
+    "caracteristicas": ["Pantalla HD+ 6.1 pulgadas", "Cámara Dual 13MP", "Android Go"],
+    "colores": ["gris_grafito", "azul_noche"],
+    "descripcion": "Un smartphone funcional y accesible para mantenerte conectado."
+  },
+  {
+    "id": "acc001",
+    "nombre": "Auriculares Inalámbricos SoundWave Pro",
+    "categoria": "accesorios",
+    "marca": "SoundWave",
+    "precio": 150.00,
+    "stock": 40,
+    "caracteristicas": ["Cancelación de Ruido Activa", "Bluetooth 5.2", "24h de Batería"],
+    "colores": ["negro", "blanco", "plata"],
+    "descripcion": "Sumérgete en tu música con la calidad de sonido profesional de los SoundWave Pro."
+  },
+  {
+    "id": "acc002",
+    "nombre": "Smartwatch FitLife Tracker 2",
+    "categoria": "accesorios",
+    "marca": "FitLife",
+    "precio": 199.00,
+    "stock": 15,
+    "caracteristicas": ["Monitor de Ritmo Cardíaco", "GPS Integrado", "Resistente al Agua"],
+    "colores": ["negro_deportivo", "rosa_dorado", "plata_elegante"],
+    "descripcion": "Tu compañero ideal para un estilo de vida activo y saludable."
+  }
+]

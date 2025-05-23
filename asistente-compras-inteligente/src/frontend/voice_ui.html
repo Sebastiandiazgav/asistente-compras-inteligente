@@ -74,12 +74,10 @@
             statusMessages.appendChild(p);
         }
 
-        // Solicitar permiso para el micrófono y configurar MediaRecorder
         async function setupMediaRecorder() {
             try {
                 audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
-                // Opciones para MediaRecorder. 
                 const options = { mimeType: 'audio/webm' }; 
                                             
                 if (MediaRecorder.isTypeSupported('audio/wav; codecs=pcm')) {
@@ -106,7 +104,6 @@
                     const audioUrl = URL.createObjectURL(audioBlob);
                     audioPlayback.src = audioUrl;
                     downloadLink.href = audioUrl;
-                    // downloadLink.download ya está configurado arriba según el mimeType
                     
                     audioPlaybackContainer.classList.remove('hidden');
                     showStatus('Grabación detenida. Puedes reproducir o descargar.', 'success');
@@ -146,15 +143,13 @@
         stopButton.addEventListener('click', () => {
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
-                // Detener las pistas del stream del micrófono para apagar el indicador de grabación del navegador
                 if (audioStream) {
                     audioStream.getTracks().forEach(track => track.stop());
                 }
-                // No deshabilitar startButton aquí, se hace en mediaRecorder.onstop
+
             }
         });
 
-        // Inicialización
         showStatus('Haz clic en "Iniciar Grabación" para comenzar.');
         stopButton.disabled = true;
         stopButton.classList.add('btn-disabled');
